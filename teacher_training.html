@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>老师培训 · 学子托辅</title>
+<style>
+:root{
+  --org:#FF8C42; --org-d:#E1701F; --bg:#FFF8F0; --line:#FFE3C7;
+  --sb:#FFB347; --ink:#2D2D2D; --ink2:#8a7563; --sbg:#FFF7E8; --sink:#7A4A1E;
+  --ok:#2E9E5B; --bad:#D84A43;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg);color:var(--ink);overflow:hidden;line-height:1.6}
+.app{position:fixed;inset:0;max-width:900px;margin:0 auto;background:var(--bg)}
+.deck{position:absolute;inset:0}
+.slide{position:absolute;inset:0;overflow-y:auto;padding:30px 22px 112px;opacity:0;visibility:hidden;pointer-events:none;transform:translateX(36px);transition:opacity .38s ease,transform .38s ease,visibility 0s linear .38s}
+.slide.left{transform:translateX(-36px)}
+.slide.active{opacity:1;visibility:visible;pointer-events:auto;transform:translateX(0);transition:opacity .38s ease,transform .38s ease,visibility 0s}
+
+/* 通用元素 */
+.kicker{display:inline-block;font-size:13px;color:var(--org-d);background:#FFF0E0;border:1px solid var(--line);border-radius:999px;padding:3px 14px;margin-bottom:12px}
+h1{font-size:26px;color:var(--org-d);line-height:1.45;margin-bottom:10px}
+h2{font-size:23px;color:var(--org-d);line-height:1.45;margin-bottom:14px}
+h3{font-size:16px;color:var(--org-d)}
+.sub{font-size:14px;color:var(--ink2);margin-bottom:16px}
+.script{background:var(--sbg);border-left:4px solid var(--sb);border-radius:10px;padding:12px 18px;color:var(--sink);font-size:14.5px;margin-top:20px}
+.script b{display:block;font-size:12.5px;letter-spacing:1px;color:#B4763A;margin-bottom:4px}
+.card{background:#fff;border-radius:16px;border:1px solid var(--line);box-shadow:0 4px 18px rgba(255,140,66,.07);padding:18px 20px}
+.btn{display:inline-block;background:var(--org);color:#fff;border:none;border-radius:10px;padding:10px 22px;font-size:14.5px;cursor:pointer;font-family:inherit;transition:background .15s,transform .15s;touch-action:manipulation}
+.btn:hover{background:var(--org-d)}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:#fff;color:var(--org-d);border:1.5px solid var(--org)}
+.btn.gray{background:#C9C2B8}.btn.gray:hover{background:#B5ADA2}
+.btn[disabled]{opacity:.55;cursor:default;transform:none}
+.hintline{font-size:13px;color:var(--ink2);margin-top:10px}
+.flex{display:flex;gap:16px;flex-wrap:wrap}
+.col{flex:1;min-width:260px}
+.fx{opacity:0}
+.slide.active .fx{animation:fadeUp .5s ease both;animation-delay:var(--d,0s)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes bounce{0%{transform:translateY(-10px);opacity:0}60%{transform:translateY(3px)}100%{transform:translateY(0);opacity:1}}
+@keyframes scanline{0%{top:8%}50%{top:84%}100%{top:8%}}
+
+/* 手机模拟框 */
+.phone{background:#FFFDF9;border:2px solid #F0DCC4;border-radius:20px;padding:12px;box-shadow:0 6px 22px rgba(255,140,66,.10);max-width:330px;margin:0 auto;width:100%}
+.phone .ph-top{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink2);padding:2px 6px 8px;border-bottom:1px dashed #F3E3CE;margin-bottom:10px}
+.ph-title{font-size:13.5px;font-weight:bold;color:var(--org-d)}
+.ph-body{min-height:150px}
+.ph-gray{color:#B9B0A5;text-align:center;padding:46px 8px;font-size:13.5px;background:#FAF7F2;border-radius:12px}
+.notif{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:13.5px;box-shadow:0 2px 8px rgba(255,140,66,.06);animation:bounce .45s ease both}
+.notif .t{color:var(--ok);font-weight:bold}
+.notif.dim{color:#B9B0A5;border-color:#eee;animation:none}
+.scanbox{position:relative;height:120px;background:linear-gradient(160deg,#FFF3E2,#FFE9D2);border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:34px}
+.scanline{position:absolute;left:8%;right:8%;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,var(--org),transparent);animation:scanline 1s ease-in-out infinite;display:none}
+.scanbox.scanning .scanline{display:block}
+.countbadge{font-size:13px;color:var(--ink2);margin-top:8px;text-align:center}
+
+/* 聊天气泡 */
+.bubble{position:relative;border-radius:14px;padding:11px 16px;font-size:15px;max-width:78%;margin-bottom:12px}
+.bubble.mom{background:#FFE9CF;margin-right:auto;border-bottom-left-radius:4px}
+.bubble.kid{background:#F1EFEA;margin-left:auto;border-bottom-right-radius:4px}
+.abub{background:#fff;border:1.5px dashed #F2BE85;color:#9A6A2F;border-radius:12px;padding:9px 14px;font-size:14px;display:inline-block;margin:5px 8px 0 0;opacity:0;transform:translateY(8px);transition:all .45s ease}
+.abub.show{opacity:1;transform:none}
+.abub:nth-child(2).show{transition-delay:.18s}
+.abub:nth-child(3).show{transition-delay:.36s}
+
+/* 翻转卡片 */
+.flip{perspective:900px;cursor:pointer}
+.flip .inner{position:relative;width:100%;height:100%;transition:transform .55s cubic-bezier(.2,.7,.3,1.1);transform-style:preserve-3d}
+.flip.flipped .inner{transform:rotateY(180deg)}
+.flip .face,.flip .back{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;border:1px solid var(--line);background:#fff;box-shadow:0 4px 18px rgba(255,140,66,.07);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px}
+.flip .back{position:absolute;inset:0;transform:rotateY(180deg);background:#FFF4E4;border-color:#F6D9B2}
+.icard{height:150px;width:160px}
+.icard .ic{font-size:34px;margin-bottom:6px}
+.icard .nm{font-size:14.5px;color:var(--ink)}
+.icard .back{font-size:12.8px;color:#8a5a20;line-height:1.55;padding:12px}
+.flipnote{font-size:12px;color:#C29B6B;margin-top:6px}
+
+/* 三端关系 */
+.flowrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;margin:18px 0}
+.pnode{background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px 18px;text-align:center;cursor:pointer;transition:all .25s;min-width:150px;box-shadow:0 4px 18px rgba(255,140,66,.07)}
+.pnode .nm{font-size:16px;font-weight:bold;color:var(--org-d)}
+.pnode .role{font-size:12.5px;color:var(--ink2);margin-top:4px}
+.pnode.sel{border-color:var(--org);background:#FFF3E4;transform:translateY(-4px) scale(1.04);box-shadow:0 10px 26px rgba(255,140,66,.22)}
+.arrow{font-size:26px;color:#E8C9A4}
+.arrow.sel{color:var(--org)}
+.pdesc{margin-top:14px;text-align:center;font-size:14.5px;color:var(--org-d);background:#FFF3E4;border-radius:12px;padding:11px 16px;min-height:46px}
+
+/* 九宫格 */
+.grid9{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.gcell{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 6px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(255,140,66,.06)}
+.gcell .ic{font-size:26px}
+.gcell .nm{font-size:13.5px;margin-top:4px;color:var(--ink)}
+.gcell.sel{border-color:var(--org);background:#FFF3E4;transform:translateY(-2px)}
+.gdesc{margin-top:14px;background:#FFF3E4;border-radius:12px;padding:12px 16px;font-size:14.5px;color:var(--org-d);min-height:48px;text-align:center}
+
+/* 对比卡 & 作业 */
+.cmpcard{border-radius:14px;padding:14px 16px;font-size:14.5px;transition:all .4s}
+.cmpcard.grayc{background:#F5F3F0;color:#9C948A;border:1.5px solid #E8E3DA}
+.cmpcard.greenc{background:#EFFBF3;color:#1E7A45;border:1.5px solid #BEE7CD}
+.lit{border-color:var(--org)!important;box-shadow:0 8px 24px rgba(255,140,66,.22)!important;transform:translateY(-3px)}
+
+/* 动态拼图 */
+.slot{border:1.5px dashed #EBD6B8;border-radius:12px;min-height:74px;display:flex;align-items:center;justify-content:center;color:#C9AE8C;font-size:13px;margin-bottom:9px;padding:8px;text-align:center;transition:all .35s}
+.slot.on{border-style:solid;border-color:#F6D9B2;background:#FFF9EF;color:#8a5a20;animation:pop .4s ease both}
+.photostrip{display:flex;gap:8px;flex-wrap:wrap}
+.photo{width:74px;height:60px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(150deg,#FFE7CB,#FFD8AE);animation:pop .4s ease both}
+.toggles{display:flex;flex-direction:column;gap:10px}
+.tog{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;font-size:14.5px;transition:all .2s}
+.tog .box{width:20px;height:20px;border-radius:6px;border:2px solid #F2C58F;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;flex:none}
+.tog.on{background:#FFF3E4;border-color:var(--org)}
+.tog.on .box{background:var(--org);border-color:var(--org)}
+
+/* 积分 */
+.balance{font-size:38px;font-weight:bold;color:var(--org-d);text-align:center;margin:6px 0}
+.balance small{font-size:15px;color:var(--ink2);font-weight:normal}
+.flowline{display:flex;justify-content:space-between;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13.5px;margin-top:7px;animation:bounce .45s ease both}
+.flowline .plus{color:var(--ok);font-weight:bold}
+
+/* 倒计时 */
+.clock{text-align:center;padding:18px 10px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 18px rgba(255,140,66,.07)}
+.clock .big{font-size:40px;font-weight:bold;color:var(--org-d);letter-spacing:2px;font-variant-numeric:tabular-nums}
+.clock .lab{font-size:14px;color:var(--ink2);margin-top:6px}
+.okstamp{display:none;text-align:center;padding:20px;background:#EFFBF3;border:2px solid #BEE7CD;border-radius:16px;margin-top:14px;animation:pop .5s ease both}
+.okstamp.show{display:block}
+.okstamp .big{font-size:34px;color:var(--ok);font-weight:bold}
+
+/* 排行榜 */
+.rankitem{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:8px;font-size:14.5px}
+.rankitem .nm{flex:none;width:152px}
+.rankitem .barbg{flex:1;height:12px;background:#FFF1DE;border-radius:6px;overflow:hidden}
+.rankitem .barfill{height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#FFC57D,#FF8C42);transition:width .6s ease}
+.rankitem .pct{flex:none;width:46px;text-align:right;color:var(--org-d);font-weight:bold;opacity:0;transition:opacity .3s}
+.ranklist.sorted .pct{opacity:1}
+
+/* 续费流程 */
+.fnode{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;font-size:14px;flex:1;min-width:110px;transition:all .3s}
+.fnode .ic{font-size:24px;display:block;margin-bottom:4px}
+.fnode.lit{border-color:var(--org);background:#FFF3E4;transform:scale(1.05)}
+.farrow{font-size:24px;color:#E8C9A4;transition:color .3s}
+.farrow.lit{color:var(--org);transform:scale(1.2)}
+.rate{font-size:46px;font-weight:bold;color:#B9B0A5;text-align:center;margin-top:18px;transition:color .4s}
+.rate.hot{color:var(--ok)}
+
+/* 测验 */
+.opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 16px;font-size:14.5px;margin-bottom:10px;cursor:pointer;font-family:inherit;color:var(--ink);transition:all .2s}
+.opt:hover{border-color:#F2BE85}
+.opt.correct{background:#EFFBF3;border-color:var(--ok);color:#1E7A45;font-weight:bold}
+.opt.wrong{background:#FDF0EF;border-color:#E8A7A3;color:#B23B35}
+.opt .fb{float:right;font-size:13px}
+.qexplain{display:none;background:#EFFBF3;border:1px solid #BEE7CD;border-radius:12px;padding:12px 16px;font-size:14px;color:#1E7A45;margin-top:6px}
+.qexplain.show{display:block;animation:fadeUp .4s ease both}
+
+/* 清单 */
+.ckitem{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:8px;font-size:14.5px;cursor:pointer;transition:all .2s}
+.ckitem .box{width:22px;height:22px;border-radius:7px;border:2px solid #F2C58F;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;flex:none;transition:all .2s}
+.ckitem.done{background:#F4FBF6;border-color:#CBEBD7;color:#5C7A66;text-decoration:line-through}
+.ckitem.done .box{background:var(--ok);border-color:var(--ok)}
+.counter-line{font-size:14px;color:var(--ink2);margin:10px 0}
+.stamp{display:none;text-align:center;margin-top:14px}
+.stamp.show{display:block}
+.stamp .s{display:inline-block;border:4px double var(--ok);color:var(--ok);font-size:30px;font-weight:bold;letter-spacing:6px;padding:10px 34px;border-radius:14px;transform:rotate(-8deg);animation:pop .5s ease both}
+
+/* 表格 */
+table{width:100%;border-collapse:collapse;font-size:14px;background:#fff;border-radius:12px;overflow:hidden}
+th{background:#FFEFDC;color:#8a5a20;text-align:left;padding:9px 12px;font-size:13.5px}
+td{padding:8px 12px;border-top:1px solid #F7E8D4}
+tr:nth-child(even) td{background:#FFFBF4}
+
+/* 控制条 */
+.controls{position:absolute;left:0;right:0;bottom:0;height:92px;pointer-events:none;z-index:40}
+.navbtn{position:absolute;bottom:30px;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.85);color:var(--org-d);font-size:22px;line-height:1;cursor:pointer;pointer-events:auto;box-shadow:0 2px 12px rgba(255,140,66,.16);transition:transform .15s,background .15s}
+.navbtn:hover{background:#fff;transform:scale(1.07)}
+.navbtn:active{transform:scale(.94)}
+.navbtn.dim{opacity:.3;pointer-events:none}
+#prevBtn{left:14px}#nextBtn{right:14px}
+.counter{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);font-size:13px;color:#B4763A;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:999px;padding:4px 16px;pointer-events:auto}
+.bar{position:absolute;left:0;right:0;bottom:0;height:4px;background:#FFE9D2}
+.bar-fill{height:100%;width:0;background:linear-gradient(90deg,#FFB347,#FF8C42);border-radius:0 4px 4px 0;transition:width .35s ease}
+
+@media (max-width:560px){
+  h1{font-size:22px}h2{font-size:20px}
+  .slide{padding:24px 16px 108px}
+  .gcell .nm{font-size:12.5px}
+  .rankitem .nm{width:112px;font-size:13.5px}
+  .icard{width:calc(50% - 6px);height:128px}
+}
+@media print{
+  .controls{display:none!important}
+  .slide{position:static!important;visibility:visible!important;opacity:1!important;transform:none!important;display:none;padding:0;overflow:visible!important}
+  .slide.active{display:block!important}
+  body,.app{overflow:visible!important;height:auto!important;position:static!important}
+  .slide.active .fx{animation:none;opacity:1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="deck">
+
+<!-- ============ 1 封面 ============ -->
+<section class="slide">
+  <div class="fx" style="--d:.05s"><span class="kicker">学子托辅 · 老师系统培训</span></div>
+  <h1 class="fx" style="--d:.12s">你不是在填表，<br>你是在给家长直播孩子的这一天</h1>
+  <p class="sub fx" style="--d:.2s">18 页走完 = 学会 9 个页面里每天要用的 5 个动作</p>
+  <div class="card fx" style="--d:.28s">
+    <div style="text-align:center;padding:8px 0;font-size:15px;color:var(--ink2)">
+      📱 手机看？左右滑动翻页<br>💻 电脑看？按 ← → 方向键
+    </div>
+  </div>
+  <div class="script fx" style="--d:.36s"><b>🗣 讲解话术</b>今天培训不是教你们用一个软件。是告诉你们一件事：你们每天做的每一件事，家长在手机上都能看见。</div>
+</section>
+
+<!-- ============ 2 家长的过去 ============ -->
+<section class="slide">
+  <span class="kicker">先看一个熟悉的场景</span>
+  <h2>过去：家长只能问，孩子只会说「还行」</h2>
+  <div class="flex">
+    <div class="col card">
+      <h3 style="margin-bottom:12px">💬 晚上 8 点，家里</h3>
+      <div class="bubble mom">今天在机构怎么样呀？</div>
+      <div class="bubble kid">还行。</div>
+      <div class="bubble mom" style="animation:pop .4s .5s ease both;opacity:.75">……</div>
+    </div>
+    <div class="col card">
+      <h3 style="margin-bottom:12px">😟 家长真正想知道的是</h3>
+      <div id="anxBubbles" style="min-height:120px">
+        <span class="abub">⏰ 到没到机构？</span>
+        <span class="abub">📝 作业哪题不会？</span>
+        <span class="abub">🍱 中午吃了什么？</span>
+      </div>
+      <button class="btn" id="expandBtn" style="margin-top:10px">展开家长的心里话</button>
+      <div class="hintline">孩子一句「还行」，家长焦虑一晚上。</div>
+    </div>
+  </div>
+  <div class="script"><b>🗣 讲解话术</b>过去，家长只能问孩子，孩子只会说「还行」。家长焦虑，机构却无法证明自己做了多少。</div>
+</section>
+
+<!-- ============ 3 现在看到了什么 ============ -->
+<section class="slide">
+  <span class="kicker">再看现在</span>
+  <h2>现在，家长打开手机，孩子的一天全在这儿</h2>
+  <p class="sub">点一点下面每张卡片，翻过来看家长端的样子 👇</p>
+  <div class="flex" style="gap:12px">
+    <div class="flip icard" data-flip><div class="inner">
+      <div class="face"><div class="ic">✅</div><div class="nm">签到</div></div>
+      <div class="back">「08:05 已到机构 · 老师已确认」<div class="flipnote">到没到，不用猜</div></div>
+    </div></div>
+    <div class="flip icard" data-flip><div class="inner">
+      <div class="face"><div class="ic">📝</div><div class="nm">作业批改</div></div>
+      <div class="back">「第 3 题计算错误，注意进位；第 5 题思路正确，表扬！」<div class="flipnote">哪题不会，一目了然</div></div>
+    </div></div>
+    <div class="flip icard" data-flip><div class="inner">
+      <div class="face"><div class="ic">📋</div><div class="nm">每日记录</div></div>
+      <div class="back">「餐食动态 🍱 · 课堂瞬间 📸 · 表现评价 ⭐」<div class="flipnote">一天过得怎么样，都有记录</div></div>
+    </div></div>
+    <div class="flip icard" data-flip><div class="inner">
+      <div class="face"><div class="ic">📷</div><div class="nm">照片</div></div>
+      <div class="back">📸 午饭的 · 上课的 · 活动的<div class="flipnote">照片比文字更有说服力</div></div>
+    </div></div>
+    <div class="flip icard" data-flip><div class="inner">
+      <div class="face"><div class="ic">📈</div><div class="nm">成长报告</div></div>
+      <div class="back">「本周出勤 5/5 · 作业完成 100% · 积分 +18 · 老师评语…」<div class="flipnote">周末的「成绩单」</div></div>
+    </div></div>
+  </div>
+  <div class="script"><b>🗣 讲解话术</b>现在，家长打开手机，孩子的一天全在这儿。这些内容，全部来自你们每天的点击。</div>
+</section>
+
+<!-- ============ 4 三端关系 ============ -->
+<section class="slide">
+  <span class="kicker">记住这张图</span>
+  <h2>三端关系：你的记录，是传给家长的信息</h2>
+  <div class="flowrow">
+    <div class="pnode" data-desc="老板端 · 定规则：什么时候签到、什么时候交报告、用看板衡量什么。"><div class="nm">🏢 老板端</div><div class="role">定规则</div></div>
+    <div class="arrow" id="ar1">➜</div>
+    <div class="pnode" data-desc="老师端 · 记录价值：你每天点下的每一笔，都是给家长的「证据」。"><div class="nm">👩‍🏫 老师端</div><div class="role">记录价值</div></div>
+    <div class="arrow" id="ar2">➜</div>
+    <div class="pnode" data-desc="家长端 · 看见价值：家长手机里的每一条消息，都来自你的记录。"><div class="nm">👨‍👩‍👧 家长端</div><div class="role">看见价值</div></div>
+  </div>
+  <div class="pdesc" id="pdesc">👆 点一点任意一端，看看它在干什么</div>
+  <div class="script"><b>🗣 讲解话术</b>老板定规则，老师记录，家长看见。你的每一次操作，最后都会变成家长手机里的一条信息。</div>
+</section>
+
+<!-- ============ 5 九宫格 ============ -->
+<section class="slide">
+  <span class="kicker">全景地图</span>
+  <h2>你每天用的，就是这 9 个页面</h2>
+  <div class="grid9" id="grid9">
+    <div class="gcell" data-desc="🏠 工作台：你的首页——上班签到、今日待办、快捷入口都在这。"><div class="ic">🏠</div><div class="nm">工作台</div></div>
+    <div class="gcell" data-desc="👨‍🎓 学生：本班学生名单、家长联系方式、学生详情。"><div class="ic">👨‍🎓</div><div class="nm">学生</div></div>
+    <div class="gcell" data-desc="✅ 签到：今日出勤（已到 / 迟到 / 请假），漏签的孩子手动改一下就行。"><div class="ic">✅</div><div class="nm">签到</div></div>
+    <div class="gcell" data-desc="📝 作业：布置作业、批改作业——评语 + 积分 + 照片，一步到位。"><div class="ic">📝</div><div class="nm">作业</div></div>
+    <div class="gcell" data-desc="✍️ 评价：写每日评价，有标签和话术模板，30 秒一条。"><div class="ic">✍️</div><div class="nm">评价</div></div>
+    <div class="gcell" data-desc="⭐ 积分：加分 / 扣分、快捷分值、排行榜——孩子最吃这一套。"><div class="ic">⭐</div><div class="nm">积分</div></div>
+    <div class="gcell" data-desc="📸 每日记录：发动态记录孩子的一天——餐食、课堂、活动 + 照片，家长可见。"><div class="ic">📸</div><div class="nm">每日记录</div></div>
+    <div class="gcell" data-desc="📊 报表：周报 / 月报——写评语、提交，家长周末就能看到。"><div class="ic">📊</div><div class="nm">报表</div></div>
+    <div class="gcell" data-desc="💬 社区：浏览班级动态、回复家长评论。"><div class="ic">💬</div><div class="nm">社区</div></div>
+  </div>
+  <div class="gdesc" id="gdesc">👆 点任意格子，看它是干嘛的</div>
+  <div class="script"><b>🗣 讲解话术</b>你每天用到的就是这 9 个页面。不用记，点开就会用。</div>
+</section>
+
+<!-- ============ 6 人脸签到 ============ -->
+<section class="slide">
+  <span class="kicker">核心动作 1 / 5</span>
+  <h2>孩子到机构，拍一下——家长立刻知道</h2>
+  <div class="flex">
+    <div class="col">
+      <div class="phone">
+        <div class="ph-top"><span class="ph-title">老师端 · 人脸签到</span><span>📷</span></div>
+        <div class="ph-body">
+          <div class="scanbox" id="scanbox">😊<div class="scanline"></div></div>
+          <div style="text-align:center;margin-top:12px"><button class="btn" id="faceBtn">📷 拍下一位学生</button></div>
+          <div class="countbadge" id="faceCount">已签到 0 位</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="phone" style="border-color:#CDE9D6">
+        <div class="ph-top"><span class="ph-title" style="color:#2E9E5B">家长端 · 收到通知</span><span>👨‍👩‍👧</span></div>
+        <div class="ph-body" id="parentNotes"><div class="ph-gray" id="phGray">等待老师操作…</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="script"><b>🗣 讲解话术</b>孩子到机构，你人脸签到。家长手机立刻收到通知。你不用再一个个发微信——一个孩子 2 秒，全班 1 分钟搞定。</div>
+</section>
+
+<!-- ============ 7 作业批改 ============ -->
+<section class="slide">
+  <span class="kicker">核心动作 2 / 5</span>
+  <h2>同样的批改，「一句话」的差别</h2>
+  <div class="flex">
+    <div class="col card">
+      <h3 style="margin-bottom:10px">👩‍🏫 老师端 · 批改作业</h3>
+      <p style="font-size:14px;color:var(--ink2);margin-bottom:12px">你可以两种方式批改——都点一下，看家长端的区别：</p>
+      <button class="btn gray" id="btnMark" style="margin-right:8px">只打「已阅」</button>
+      <button class="btn" id="btnRemark">写具体评语</button>
+      <div class="hintline">💡 评语可以配积分、传照片，30 秒搞定</div>
+    </div>
+    <div class="col card">
+      <h3 style="margin-bottom:12px">👨‍👩‍👧 家长端 · 他看到什么</h3>
+      <div id="hwResult">
+        <div class="cmpcard grayc">等待老师批改…</div>
+      </div>
+    </div>
+  </div>
+  <div class="script"><b>🗣 讲解话术</b>你只打「已阅」，家长什么也看不到。你写一句评语，家长就知道孩子哪题不会，当天就能辅导。</div>
+</section>
+
+<!-- ============ 8 每日动态 ============ -->
+<section class="slide">
+  <span class="kicker">核心动作 3 / 5</span>
+  <h2>30 秒，把孩子的中午发出去</h2>
+  <div class="flex">
+    <div class="col card">
+      <h3 style="margin-bottom:12px">👩‍🏫 老师端 · 发布动态</h3>
+      <div class="toggles">
+        <div class="tog" data-tog="meal"><span class="box">✓</span>🏫 餐食动态：今天午饭吃了什么</div>
+        <div class="tog" data-tog="daily"><span class="box">✓</span>📚 班级日常：课堂、作业瞬间</div>
+        <div class="tog" data-tog="star"><span class="box">✓</span>⭐ 明星学员：今天谁表现最棒</div>
+      </div>
+      <div style="margin-top:12px"><button class="btn" id="photoBtn">📷 拍一张照片</button></div>
+      <div class="hintline">勾一条、拍一张，家长端实时更新 👉</div>
+    </div>
+    <div class="col card">
+      <h3 style="margin-bottom:12px">👨‍👩‍👧 家长端 · 社区动态</h3>
+      <div class="slot" data-slot="meal">🍱 餐食动态 —— 待发布</div>
+      <div class="slot" data-slot="daily">📚 班级日常 —— 待发布</div>
+      <div class="slot" data-slot="star">⭐ 明星学员 —— 待发布</div>
+      <div class="photostrip" id="photoStrip"></div>
+    </div>
+  </div>
+  <div class="script"><b>🗣 讲解话术</b>中午吃完，你花 30 秒发一条动态、拍一张照片。家长下午就能看到孩子中午吃了什么、今天在班里怎么样。</div>
+</section>
+
+<!-- ============ 9 积分 ============ -->
+<section class="slide">
+  <span class="kicker">核心动作 4 / 5</span>
+  <h2>一句夸奖，变成家里的一件大事</h2>
+  <div class="flex">
+    <div class="col card" style="display:flex;flex-direction:column;justify-content:center;align-items:center">
+      <p style="font-size:14px;color:var(--ink2);margin-bottom:14px;text-align:center">孩子今天表现好？发个积分。</p>
+      <button class="btn" id="pointBtn" style="font-size:16px;padding:13px 30px">🌟 发 5 积分</button>
+      <div class="hintline">快捷分值一点就走，还能写原因（如「作业优秀」）</div>
+    </div>
+    <div class="col card">
+      <h3 style="margin-bottom:4px">👨‍👩‍👧 家长端 · 积分账户</h3>
+      <div class="balance"><span id="ptNum">0</span><small> 分</small></div>
+      <div id="ptFlow"></div>
+    </div>
+  </div>
+  <div class="script"><b>🗣 讲解话术</b>孩子今天表现好，你发 5 积分。家长端立刻更新。孩子回家会说「老师给我加分了」，家长打开手机一看，果然有。</div>
+</section>
+
+<!-- ============ 10 周报 ============ -->
+<section class="slide">
+  <span class="kicker">核心动作 5 / 5 · 重点</span>
+  <h2>周五 10:00 前，把这一周交出去</h2>
+  <div class="clock" id="clockBox">
+    <div class="big"><span id="cdStr">--</span></div>
+    <div class="lab">距离「周五 10:00 周报提交截止」</div>
+    <div style="margin-top:14px"><button class="btn" id="weekBtn">✅ 提交本周周报</button></div>
+  </div>
+  <div class="okstamp" id="weekOk">
+    <div class="big">✅ 已提交</div>
+    <div style="font-size:14px;color:#1E7A45;margin-top:6px">家长周末打开手机，就能看到孩子这一周的成长</div>
+  </div>
+  <div class="script"><b>🗣 讲解话术</b>每周五 10 点前，你把周报评语提交。家长周末打开手机就能看到孩子这一周的成长。你不交，家长那边就是空的。</div>
+</section>
+
+<!-- ============ 11 排行榜 ============ -->
+<section class="slide">
+  <span class="kicker">家长视角</span>
+  <h2>猜猜：家长最爱看什么？</h2>
+  <p class="sub">先猜一猜，再点「排序」，看真实顺序和比例 👇</p>
+  <div id="rankList" class="ranklist">
+    <div class="rankitem" data-pct="41"><span class="nm">📈 积分与成长报告</span><div class="barbg"><div class="barfill"></div></div><span class="pct">41%</span></div>
+    <div class="rankitem" data-pct="64"><span class="nm">📄 日报 / 周报</span><div class="barbg"><div class="barfill"></div></div><span class="pct">64%</span></div>
+    <div class="rankitem" data-pct="78"><span class="nm">📸 每日记录与照片</span><div class="barbg"><div class="barfill"></div></div><span class="pct">78%</span></div>
+    <div class="rankitem" data-pct="85"><span class="nm">📝 作业批改</span><div class="barbg"><div class="barfill"></div></div><span class="pct">85%</span></div>
+    <div class="rankitem" data-pct="92"><span class="nm">✅ 签到记录</span><div class="barbg"><div class="barfill"></div></div><span class="pct">92%</span></div>
+  </div>
+  <div style="margin-top:6px"><button class="btn" id="sortBtn">🔀 按打开频率排序</button></div>
+  <div class="script"><b>🗣 讲解话术</b>家长最爱看的是签到、作业批改和照片。你在这三件事上多花一分钟，家长就多一分放心。</div>
+</section>
+
+<!-- ============ 12 续费率 ============ -->
+<section class="slide">
+  <span class="kicker">跟你有关的一件事</span>
+  <h2>你的记录，和机构的续费率有关</h2>
+  <div class="flowrow" style="margin-top:8px">
+    <div class="fnode" id="fn1"><span class="ic">✍️</span>老师认真记录</div>
+    <div class="farrow" id="fa1">➜</div>
+    <div class="fnode" id="fn2"><span class="ic">👨‍👩‍👧</span>家长天天打开看</div>
+    <div class="farrow" id="fa2">➜</div>
+    <div class="fnode" id="fn3"><span class="ic">💎</span>到期愿意续费</div>
+  </div>
+  <div style="text-align:center;margin-top:6px"><button class="btn" id="playBtn">▶ 播放这段因果</button></div>
+  <div class="rate" id="rateNum">60%</div>
+  <div class="script"><b>🗣 讲解话术</b>家长为什么续费？不是因为你便宜，是因为他觉得孩子被认真对待了。他怎么知道？靠你每天留下的记录。你不记录，家长就看不见；看不见，就不续了。</div>
+</section>
+
+<!-- ============ 13 老板看什么 ============ -->
+<section class="slide">
+  <span class="kicker">别紧张，这不是监视</span>
+  <h2>老板端会看你三个数（都是帮你证明价值）</h2>
+  <div class="flex" style="gap:14px">
+    <div class="flip col" data-flip style="height:200px"><div class="inner">
+      <div class="face"><div style="font-size:32px">📬</div><div style="font-size:16px;margin-top:6px">提交率</div><div class="flipnote">点击翻面</div></div>
+      <div class="back">周报 / 月报按时提交的比例。低于 90%，老板会找你复盘——所以周五中午前交完最稳。</div>
+    </div></div>
+    <div class="flip col" data-flip style="height:200px"><div class="inner">
+      <div class="face"><div style="font-size:32px">🔥</div><div style="font-size:16px;margin-top:6px">家长活跃度</div><div class="flipnote">点击翻面</div></div>
+      <div class="back">多少家长每天打开、最爱看什么内容——你发的东西越好看，这个数越高。</div>
+    </div></div>
+    <div class="flip col" data-flip style="height:200px"><div class="inner">
+      <div class="face"><div style="font-size:32px">💎</div><div style="font-size:16px;margin-top:6px">续费率</div><div class="flipnote">点击翻面</div></div>
+      <div class="back">到期的家长续了没有——和你每天留下的记录直接相关。</div>
+    </div></div>
+  </div>
+  <div class="script"><b>🗣 讲解话术</b>老板会看你的提交率、家长活跃度和续费率。这不是监视，是帮你证明你的工作价值。</div>
+</section>
+
+<!-- ============ 14 三条红线 ============ -->
+<section class="slide">
+  <span class="kicker">必须记住</span>
+  <h2>三条红线，碰一次就是事故</h2>
+  <div class="flex" style="gap:14px">
+    <div class="flip col" data-flip style="height:200px"><div class="inner">
+      <div class="face"><div style="font-size:32px">🔒</div><div style="font-size:16px;margin-top:6px">红线 1</div><div class="flipnote">点击翻开</div></div>
+      <div class="back">不泄露其他孩子信息：手机号要脱敏，截图不露全名。</div>
+    </div></div>
+    <div class="flip col" data-flip style="height:200px"><div class="inner">
+      <div class="face"><div style="font-size:32px">📷</div><div style="font-size:16px;margin-top:6px">红线 2</div><div class="flipnote">点击翻开</div></div>
+      <div class="back">不拍隐私部位、不拍其他孩子正脸。</div>
+    </div></div>
+    <div class="flip col" data-flip style="height:200px"><div class="inner">
+      <div class="face"><div style="font-size:32px">🔑</div><div style="font-size:16px;margin-top:6px">红线 3</div><div class="flipnote">点击翻开</div></div>
+      <div class="back">不共用账号、不泄露验证码。</div>
+    </div></div>
+  </div>
+  <div class="script"><b>🗣 讲解话术</b>这三条红线，碰一次就是事故。记住：不泄露、不比较、不传播、不共用。</div>
+</section>
+
+<!-- ============ 15 情景测验 ============ -->
+<section class="slide">
+  <span class="kicker">情景小测</span>
+  <h2>家长说「我看不到孩子」，你第一步做什么？</h2>
+  <div style="margin-top:8px">
+    <button class="opt" data-ok="0">A. 让家长重新注册<span class="fb"></span></button>
+    <button class="opt" data-ok="1">B. 问家长手机号，后台查绑定<span class="fb"></span></button>
+    <button class="opt" data-ok="0">C. 让家长去找老板<span class="fb"></span></button>
+    <button class="opt" data-ok="0">D. 让家长卸载重装<span class="fb"></span></button>
+  </div>
+  <div class="qexplain" id="qExplain">✔ 正确：先问家长手机号 → 后台确认孩子有没有绑好。不要急着让家长重新注册，多问一句、少走弯路。</div>
+  <div class="script"><b>🗣 讲解话术</b>遇到问题先问手机号，后台查绑定。不要急着让家长重新注册。</div>
+</section>
+
+<!-- ============ 16 考核清单 ============ -->
+<section class="slide">
+  <span class="kicker">上岗考核</span>
+  <h2>10 项全部打钩，你就正式上岸</h2>
+  <div class="counter-line">已完成 <b id="ckDone">0</b> / 10</div>
+  <div id="ckList">
+    <div class="ckitem"><span class="box">✓</span>1. 登录并点过「订阅消息」</div>
+    <div class="ckitem"><span class="box">✓</span>2. 找到本班学生名单</div>
+    <div class="ckitem"><span class="box">✓</span>3. 完成一次人脸签到</div>
+    <div class="ckitem"><span class="box">✓</span>4. 完成一次手动补签（把漏签改成「已到」）</div>
+    <div class="ckitem"><span class="box">✓</span>5. 布置并批改一份作业（写评语）</div>
+    <div class="ckitem"><span class="box">✓</span>6. 发一条带照片的每日动态</div>
+    <div class="ckitem"><span class="box">✓</span>7. 发一次积分</div>
+    <div class="ckitem"><span class="box">✓</span>8. 提交一次周报评语</div>
+    <div class="ckitem"><span class="box">✓</span>9. 发一条社区动态</div>
+    <div class="ckitem"><span class="box">✓</span>10. 口述 3 个操作对应的家长端展示</div>
+  </div>
+  <div class="stamp" id="stamp"><div class="s">✅ 通关</div></div>
+  <div class="script"><b>🗣 讲解话术</b>这 10 项全部做到，你就算真正会用系统了。</div>
+</section>
+
+<!-- ============ 17 一日清单 ============ -->
+<section class="slide">
+  <span class="kicker">可打印 · 贴工位</span>
+  <h2>老师一日操作清单</h2>
+  <table>
+    <tr><th style="width:150px">时间</th><th>动作</th></tr>
+    <tr><td>到岗前</td><td>检查学生名单、家长绑定、人脸录入</td></tr>
+    <tr><td>到岗</td><td>人脸签到，异常手动补签</td></tr>
+    <tr><td>上午</td><td>作业批改、课堂记录、照片</td></tr>
+    <tr><td>中午</td><td>午餐动态、午休记录</td></tr>
+    <tr><td>下午</td><td>作业批改、评价、积分</td></tr>
+    <tr><td>放学前</td><td>留言备注、检查未提交</td></tr>
+    <tr><td>20:00 前</td><td>补评价 / 补动态（日报素材）</td></tr>
+    <tr><td>周五 10:00 前</td><td>提交周报评语</td></tr>
+    <tr><td>每月 1 日 9:00 前</td><td>提交月报评语</td></tr>
+  </table>
+  <div style="margin-top:12px"><button class="btn ghost" onclick="window.print()">🖨️ 打印这一页</button></div>
+  <div class="script"><b>🗣 讲解话术</b>打印出来贴在工位上，每天照着做。</div>
+</section>
+
+<!-- ============ 18 结尾 ============ -->
+<section class="slide" style="display:flex;flex-direction:column;justify-content:center">
+  <div style="text-align:center">
+    <div class="fx" style="--d:.1s;font-size:44px">❤️</div>
+    <h1 class="fx" style="--d:.2s;font-size:30px">你的每一次记录，<br>都是家长的一次放心。</h1>
+    <p class="sub fx" style="--d:.3s;font-size:17px">也是机构续费的理由。</p>
+  </div>
+  <div class="script fx" style="--d:.4s"><b>🗣 讲解话术</b>记住，你不是在填表，你是在给家长直播孩子的这一天。</div>
+</section>
+
+</div><!-- /deck -->
+
+<div class="controls">
+  <button class="navbtn" id="prevBtn" aria-label="上一页">‹</button>
+  <button class="navbtn" id="nextBtn" aria-label="下一页">›</button>
+  <div class="counter" id="counter">1 / 18</div>
+  <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+</div>
+</div><!-- /app -->
+
+<script>
+(function(){
+'use strict';
+function $(id){return document.getElementById(id)}
+
+/* ---------- 翻页框架 ---------- */
+var slides=[].slice.call(document.querySelectorAll('.slide'));
+var total=slides.length, cur=0;
+var m=(location.search.match(/[?&]p=(\d+)/)||[])[1];
+if(m){cur=Math.max(0,Math.min(total-1,parseInt(m,10)-1));}
+var bar=$('barFill'),cnt=$('counter'),prevB=$('prevBtn'),nextB=$('nextBtn');
+function show(i){
+  if(i<0)i=0; if(i>total-1)i=total-1;
+  for(var k=0;k<total;k++){
+    slides[k].className=slides[k].className.replace(/\s*\b(active|left)\b/g,'');
+    if(k<i)slides[k].className+=' left';
+    if(k===i)slides[k].className+=' active';
+  }
+  cur=i;
+  bar.style.width=((i+1)/total*100)+'%';
+  cnt.textContent=(i+1)+' / '+total;
+  prevB.className='navbtn'+(i===0?' dim':'');
+  nextB.className='navbtn'+(i===total-1?' dim':'');
+  slides[i].scrollTop=0;
+}
+function next(){show(cur+1)} function prev(){show(cur-1)}
+prevB.addEventListener('click',prev); nextB.addEventListener('click',next);
+document.addEventListener('keydown',function(e){
+  var t=e.target||{};
+  if(t.tagName==='INPUT'||t.tagName==='TEXTAREA')return;
+  if(e.key==='ArrowLeft')prev();
+  else if(e.key==='ArrowRight')next();
+  else if(e.key==='Home')show(0);
+  else if(e.key==='End')show(total-1);
+});
+var tx=0,ty=0,tt=0;
+document.addEventListener('touchstart',function(e){
+  if(e.touches.length!==1)return;var t=e.touches[0];tx=t.clientX;ty=t.clientY;tt=Date.now();
+},{passive:true});
+document.addEventListener('touchend',function(e){
+  if(!e.changedTouches||!e.changedTouches.length)return;
+  var t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty,dt=Date.now()-tt;
+  if(dt<900&&Math.abs(dx)>56&&Math.abs(dx)>Math.abs(dy)*1.2){ if(dx<0)next(); else prev(); }
+},{passive:true});
+show(cur);
+
+/* ---------- 第2页：展开焦虑 ---------- */
+var exB=$('expandBtn');
+if(exB){exB.addEventListener('click',function(){
+  var b=$('anxBubbles').children;
+  for(var i=0;i<b.length;i++)b[i].className='abub show';
+  exB.textContent='这就是家长想知道的 👆';
+  exB.className='btn gray'; exB.disabled=true;
+});}
+
+/* ---------- 通用：翻转卡（点击翻面 / 翻回） ---------- */
+var flips=document.querySelectorAll('[data-flip]');
+for(var fi=0;fi<flips.length;fi++){(function(el){
+  el.addEventListener('click',function(){
+    if(el.className.indexOf('flipped')>=0){el.className=el.className.replace(' flipped','');}
+    else{el.className+=' flipped';}
+  });
+})(flips[fi]);}
+
+/* ---------- 第4页：三端 ---------- */
+(function(){
+  var nodes=document.querySelectorAll('.pnode'),desc=$('pdesc'),ars=[$('ar1'),$('ar2')],def=desc.textContent;
+  for(var i=0;i<nodes.length;i++){(function(n,idx){
+    n.addEventListener('click',function(){
+      for(var k=0;k<nodes.length;k++)nodes[k].className='pnode';
+      n.className='pnode sel'; desc.textContent=n.getAttribute('data-desc');
+      for(var a=0;a<ars.length;a++){var li=(a+1)<=idx;ars[a].className='arrow'+(li?' sel':'');}
+    });
+  })(nodes[i],i);}
+})();
+
+/* ---------- 第5页：九宫格 ---------- */
+(function(){
+  var cells=document.querySelectorAll('.gcell'),gd=$('gdesc');
+  for(var i=0;i<cells.length;i++){(function(c){
+    c.addEventListener('click',function(){
+      for(var k=0;k<cells.length;k++)cells[k].className='gcell';
+      c.className='gcell sel'; gd.textContent=c.getAttribute('data-desc');
+    });
+  })(cells[i]);}
+})();
+
+/* ---------- 第6页：人脸签到 ---------- */
+(function(){
+  var btn=$('faceBtn'),scan=$('scanbox'),stack=$('parentNotes'),gray=$('phGray'),cnt=$('faceCount');
+  if(!btn)return;
+  var n=0,times=['08:05','08:07','08:09','08:12','08:15'],busy=false;
+  btn.addEventListener('click',function(){
+    if(busy||n>=5)return; busy=true;
+    btn.disabled=true; btn.textContent='识别中…'; scan.className='scanbox scanning';
+    setTimeout(function(){
+      scan.className='scanbox'; n++;
+      if(gray)gray.style.display='none';
+      var div=document.createElement('div');
+      div.className='notif';
+      div.innerHTML='<span class="t">✅ '+times[n-1]+' 已到机构</span><br><span style="font-size:12.5px;color:#8a7563">老师已确认 · 家长端自动推送</span>';
+      stack.insertBefore(div,stack.firstChild);
+      cnt.textContent='已签到 '+n+' 位';
+      btn.disabled=false;
+      if(n>=5){btn.textContent='✅ 演示完成';btn.className='btn gray';busy=true;}
+      else{btn.textContent='📷 拍下一位学生';busy=false;}
+    },850);
+  });
+})();
+
+/* ---------- 第7页：批改对比 ---------- */
+(function(){
+  var b1=$('btnMark'),b2=$('btnRemark'),out=$('hwResult');
+  if(!b1)return;
+  b1.addEventListener('click',function(){
+    out.innerHTML='<div class="cmpcard grayc">📄 作业已批改<div style="font-size:12.5px;margin-top:6px;color:#B0A89E">家长看到这一行——不知道孩子哪里对、哪里错。</div></div>';
+    b1.className='btn gray'; b2.className='btn';
+  });
+  b2.addEventListener('click',function(){
+    out.innerHTML='<div class="cmpcard greenc">✅ 第 3 题计算错误，注意进位；第 5 题思路正确，表扬！<div style="font-size:12.5px;margin-top:6px;color:#4d9e6d">附：⭐ +5 积分 · 📷 作业照片一张</div></div>';
+    b2.className='btn'; b1.className='btn gray';
+  });
+})();
+
+/* ---------- 第8页：每日动态 ---------- */
+(function(){
+  var togs=document.querySelectorAll('.tog');
+  var slotText={meal:'🍱 餐食动态：今日午餐——番茄牛腩 · 清炒时蔬（照片已附）',daily:'📚 班级日常：今天课堂举手踊跃，小宇表现最积极！',star:'⭐ 明星学员：今日之星——小宇（数学作业全对）'};
+  for(var i=0;i<togs.length;i++){(function(t){
+    t.addEventListener('click',function(){
+      var key=t.getAttribute('data-tog'),slot=document.querySelector('[data-slot="'+key+'"]');
+      if(t.className.indexOf('on')>=0){t.className='tog';slot.className='slot';slot.textContent=slotText[key].split('：')[0]+' —— 待发布';}
+      else{t.className='tog on';slot.className='slot on';slot.textContent=slotText[key];}
+    });
+  })(togs[i]);}
+  var pn=0,pb=$('photoBtn'),strip=$('photoStrip'),icos=['🍱','📚','🎈','📸'];
+  if(pb)pb.addEventListener('click',function(){
+    if(pn>=3)return; pn++;
+    var d=document.createElement('div'); d.className='photo'; d.textContent=icos[pn-1];
+    strip.appendChild(d);
+    if(pn>=3){pb.textContent='✅ 已上传 3 张';pb.className='btn gray';}
+  });
+})();
+
+/* ---------- 第9页：积分 ---------- */
+(function(){
+  var btn=$('pointBtn'),num=$('ptNum'),flow=$('ptFlow');
+  if(!btn)return;
+  var bal=0,clicks=0;
+  btn.addEventListener('click',function(){
+    if(clicks>=3)return; clicks++; bal+=5;
+    /* 余额滚动 */
+    var from=bal-5,to=bal,st=null;
+    function step(ts){if(!st)st=ts;var p=Math.min(1,(ts-st)/350);num.textContent=Math.round(from+(to-from)*p);if(p<1)requestAnimationFrame(step);}
+    requestAnimationFrame(step);
+    var d=document.createElement('div'); d.className='flowline';
+    var reasons=['表现好 +5','作业优秀 +5','主动帮同学 +5'];
+    d.innerHTML='<span>'+reasons[clicks-1]+'</span><span class="plus">+5</span>';
+    flow.insertBefore(d,flow.firstChild);
+    if(clicks>=3){btn.textContent='✅ 演示完成';btn.className='btn gray';}
+  });
+})();
+
+/* ---------- 第10页：倒计时 ---------- */
+(function(){
+  var s=$('cdStr'),btn=$('weekBtn'),ok=$('weekOk'),box=$('clockBox');
+  if(!s)return;
+  var done=false;
+  function nextFri(){
+    var n=new Date(),d=new Date(n);
+    var diff=(5-d.getDay()+7)%7;
+    d.setDate(d.getDate()+diff); d.setHours(10,0,0,0);
+    if(d<=n)d.setDate(d.getDate()+7);
+    return d;
+  }
+  function tick(){
+    if(done)return;
+    var ms=nextFri()-new Date();
+    var D=Math.floor(ms/86400000),H=Math.floor(ms%86400000/3600000),M=Math.floor(ms%3600000/60000),S=Math.floor(ms%60000/1000);
+    function z(v){return v<10?'0'+v:''+v}
+    s.textContent=(D>0?D+' 天 ':'')+z(H)+':'+z(M)+':'+z(S);
+  }
+  tick(); setInterval(tick,1000);
+  btn.addEventListener('click',function(){
+    done=true;
+    box.style.display='none'; ok.className='okstamp show'; ok.style.display='block';
+  });
+})();
+
+/* ---------- 第11页：排序 ---------- */
+(function(){
+  var list=$('rankList'),btn=$('sortBtn');
+  if(!btn)return;
+  btn.addEventListener('click',function(){
+    var items=[].slice.call(list.children);
+    for(var i=0;i<items.length;i++){items[i]._firstTop=items[i].getBoundingClientRect().top;}
+    items.sort(function(a,b){return parseInt(b.getAttribute('data-pct'),10)-parseInt(a.getAttribute('data-pct'),10);});
+    for(var k=0;k<items.length;k++){ list.appendChild(items[k]);
+      var last=items[k].getBoundingClientRect().top, dy=items[k]._firstTop-last;
+      if(dy){ (function(el,d){ el.style.transition='none'; el.style.transform='translateY('+d+'px)';
+        requestAnimationFrame(function(){requestAnimationFrame(function(){el.style.transition='transform .55s cubic-bezier(.2,.8,.3,1)';el.style.transform='';});});
+      })(items[k],dy); }
+    }
+    list.className='ranklist sorted';
+    for(var b=0;b<items.length;b++){ (function(el,idx){
+      setTimeout(function(){ var f=el.querySelector('.barfill'); f.style.width=el.getAttribute('data-pct')+'%'; },120*idx);
+    })(items[b],b); }
+    btn.textContent='✅ 已按频率排序'; btn.className='btn gray'; btn.disabled=true;
+  });
+})();
+
+/* ---------- 第12页：续费播放 ---------- */
+(function(){
+  var btn=$('playBtn'),n1=$('fn1'),n2=$('fn2'),n3=$('fn3'),a1=$('fa1'),a2=$('fa2'),rate=$('rateNum');
+  if(!btn)return;
+  var playing=false;
+  function reset(){n1.className='fnode';n2.className='fnode';n3.className='fnode';a1.className='farrow';a2.className='farrow';rate.className='rate';rate.textContent='60%';}
+  function countUp(from,to){
+    var st=null;
+    function step(ts){if(!st)st=ts;var p=Math.min(1,(ts-st)/900);rate.textContent=Math.round(from+(to-from)*p)+'%';if(p<1)requestAnimationFrame(step);}
+    requestAnimationFrame(step);
+  }
+  btn.addEventListener('click',function(){
+    if(playing)return; playing=true; btn.disabled=true; reset();
+    setTimeout(function(){n1.className='fnode lit';},200);
+    setTimeout(function(){a1.className='farrow lit';},800);
+    setTimeout(function(){n2.className='fnode lit';},1300);
+    setTimeout(function(){a2.className='farrow lit';},1900);
+    setTimeout(function(){n3.className='fnode lit';},2400);
+    setTimeout(function(){rate.className='rate hot';countUp(60,85);},2900);
+    setTimeout(function(){btn.disabled=false;btn.textContent='↻ 重新播放';playing=false;},4000);
+  });
+})();
+
+/* ---------- 第15页：测验 ---------- */
+(function(){
+  var opts=document.querySelectorAll('.opt'),ex=$('qExplain');
+  for(var i=0;i<opts.length;i++){(function(o){
+    o.addEventListener('click',function(){
+      var ok=o.getAttribute('data-ok')==='1',fb=o.querySelector('.fb');
+      if(ok){ o.className='opt correct'; fb.textContent='✔ 正确'; ex.className='qexplain show'; }
+      else{ o.className='opt wrong'; fb.textContent='✕ 再想想'; }
+    });
+  })(opts[i]);}
+})();
+
+/* ---------- 第16页：清单 ---------- */
+(function(){
+  var items=document.querySelectorAll('.ckitem'),doneEl=$('ckDone'),stamp=$('stamp');
+  if(!items.length)return;
+  var n=0;
+  for(var i=0;i<items.length;i++){(function(it){
+    it.addEventListener('click',function(){
+      if(it.className.indexOf('done')>=0){it.className='ckitem';n--;}
+      else{it.className='ckitem done';n++;}
+      doneEl.textContent=n;
+      if(n===10){stamp.className='stamp show';}else{stamp.className='stamp';}
+    });
+  })(items[i]);}
+})();
+
+})();
+</script>
+</body>
+</html>

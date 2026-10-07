@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>学子信知 · 资料与演示中心</title>
+<style>
+  :root{
+    --orange:#FF8C42; --deep:#E1701F; --bg:#FFF8F0; --line:#FFE3C7;
+    --ink:#2D2D2D; --muted:#9A8A78; --card:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(circle at 15% 8%, #FFE9D2 0%, rgba(255,233,210,0) 45%),
+      radial-gradient(circle at 88% 4%, #FFF0DC 0%, rgba(255,240,220,0) 40%),
+      var(--bg);
+    color:var(--ink); min-height:100vh;
+    padding:clamp(16px,4vw,40px) clamp(14px,4vw,40px) 40px;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .wrap{width:100%;max-width:680px;}
+
+  /* ---------- 品牌头 ---------- */
+  .brand{display:flex;align-items:center;gap:14px;margin:6px 0 6px;}
+  .mascots{display:flex;align-items:center;flex:0 0 auto;}
+  .mascots svg{display:block;filter:drop-shadow(0 3px 6px rgba(201,116,50,.18));}
+  .mascot-bear{width:54px;height:54px;z-index:2;}
+  .mascot-koala{width:48px;height:48px;margin-left:-14px;z-index:1;}
+  .brand-txt h1{font-size:clamp(22px,5.6vw,30px);color:var(--deep);letter-spacing:2px;line-height:1.15;font-weight:800;}
+  .brand-txt p{font-size:clamp(12px,3.2vw,14px);color:var(--muted);margin-top:4px;letter-spacing:.5px;}
+
+  .hi{margin:16px 2px 20px;background:#FFFDF9;border:1.5px dashed var(--line);border-radius:14px;
+      padding:12px 16px;font-size:clamp(12.5px,3.3vw,14px);color:#7A6A58;line-height:1.7;}
+  .hi b{color:var(--deep);}
+
+  /* ---------- 卡片 ---------- */
+  .grid{display:flex;flex-direction:column;gap:14px;}
+  .card{
+    display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;
+    background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+    padding:14px 16px;box-shadow:0 4px 18px rgba(255,140,66,.07);
+    transition:transform .16s ease, box-shadow .16s ease;
+    position:relative;overflow:hidden;
+  }
+  .card:active{transform:scale(.985);}
+  @media (hover:hover){ .card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,140,66,.16);border-color:#FFD2A8;} }
+  .ico{
+    flex:0 0 auto;width:58px;height:58px;border-radius:14px;
+    background:linear-gradient(160deg,#FFF3E2,#FFE9D2);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ico svg{display:block;width:40px;height:40px;}
+  .txt{flex:1 1 auto;min-width:0;}
+  .txt h3{font-size:clamp(15px,4vw,17px);color:#33302C;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .badge{font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#FF8C42,#E1701F);
+         border-radius:999px;padding:2.5px 9px;letter-spacing:.5px;transform:translateY(-1px);}
+  .badge.plain{background:#EAF6EE;color:#1B7A3D;font-weight:600;}
+  .txt p{font-size:clamp(12px,3.2vw,13.5px);color:var(--muted);line-height:1.65;margin-top:4px;}
+  .go{flex:0 0 auto;color:#F0B27A;font-size:20px;font-weight:700;transition:transform .16s ease;}
+  @media (hover:hover){ .card:hover .go{transform:translateX(3px);} }
+
+  /* ---------- 页脚 ---------- */
+  .foot{margin-top:28px;text-align:center;color:#B9A78F;font-size:12px;line-height:2;}
+  .foot .spark{width:16px;height:16px;display:inline-block;vertical-align:-3px;margin:0 4px;}
+  .foot .line{height:1px;width:120px;background:var(--line);margin:14px auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <mask id="mBear" maskUnits="userSpaceOnUse" x="-220" y="-220" width="440" height="440">
+    <rect x="-220" y="-220" width="440" height="440" fill="#fff"/><circle r="100" fill="#000"/>
+  </mask>
+  <mask id="mKoala" maskUnits="userSpaceOnUse" x="-220" y="-220" width="440" height="440">
+    <rect x="-220" y="-220" width="440" height="440" fill="#fff"/><circle r="100" fill="#000"/>
+  </mask>
+  <mask id="mMoon" maskUnits="userSpaceOnUse" x="-10" y="-10" width="120" height="120">
+    <rect x="-10" y="-10" width="120" height="120" fill="#fff"/><circle cx="78" cy="50" r="34" fill="#000"/>
+  </mask>
+
+  <!-- 小熊（IP 原版） -->
+  <symbol id="ic-bear" viewBox="-100 -100 200 200">
+    <g mask="url(#mBear)">
+      <circle cx="-63" cy="-70" r="38" fill="#C97432"/><circle cx="63" cy="-70" r="38" fill="#C97432"/>
+      <circle cx="-68" cy="-76" r="17" fill="#FFF3E0"/><circle cx="68" cy="-76" r="17" fill="#FFF3E0"/>
+    </g>
+    <circle r="94" fill="#C97432"/>
+    <ellipse cy="34" rx="48" ry="38" fill="#FFF3E0"/>
+    <ellipse cx="-27" cy="-8" rx="8.5" ry="10.5" fill="#2F2A24"/><ellipse cx="27" cy="-8" rx="8.5" ry="10.5" fill="#2F2A24"/>
+    <circle cx="-29.4" cy="-11.2" r="2.5" fill="#FFFDF8"/><circle cx="24.6" cy="-11.2" r="2.5" fill="#FFFDF8"/>
+    <path d="M-8 24 Q0 19.5 8 24 Q11 26.5 9 30 Q4 36.5 0 36.5 Q-4 36.5 -9 30 Q-11 26.5 -8 24 Z" fill="#2F2A24"/>
+    <path d="M-16 47 Q0 59 16 47" fill="none" stroke="#2F2A24" stroke-width="2.2" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- 考拉（IP 原版） -->
+  <symbol id="ic-koala" viewBox="-100 -100 200 200">
+    <g mask="url(#mKoala)">
+      <circle cx="-83" cy="-44" r="52" fill="#8FA3AC"/><circle cx="83" cy="-44" r="52" fill="#8FA3AC"/>
+      <circle cx="-92" cy="-49" r="24" fill="#FFF3E0"/><circle cx="92" cy="-49" r="24" fill="#FFF3E0"/>
+    </g>
+    <circle r="94" fill="#8FA3AC"/>
+    <ellipse cy="26" rx="52" ry="46" fill="#FFF3E0"/>
+    <rect x="-13" y="-14" width="26" height="42" rx="13" fill="#2F2A24"/>
+    <circle cx="-4" cy="-5" r="2.6" fill="#FFFDF8" opacity=".45"/>
+    <ellipse cx="-35" cy="-14" rx="8" ry="10" fill="#2F2A24"/><ellipse cx="35" cy="-14" rx="8" ry="10" fill="#2F2A24"/>
+    <circle cx="-37.4" cy="-17" r="2.5" fill="#FFFDF8"/><circle cx="32.6" cy="-17" r="2.5" fill="#FFFDF8"/>
+    <path d="M-14 44 Q0 55 14 44" fill="none" stroke="#2F2A24" stroke-width="2.2" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- 妈妈 -->
+  <symbol id="ic-mom" viewBox="0 0 120 130">
+    <circle cx="60" cy="20" r="13" fill="#4A3B33"/>
+    <circle cx="60" cy="62" r="36" fill="#4A3B33"/>
+    <circle cx="60" cy="68" r="29" fill="#F7DCC2"/>
+    <path d="M31 60 Q34 38 60 38 Q86 38 89 60 Q82 48 60 48 Q38 48 31 60 Z" fill="#4A3B33"/>
+    <circle cx="49" cy="68" r="2.6" fill="#2F2A24"/><circle cx="71" cy="68" r="2.6" fill="#2F2A24"/>
+    <circle cx="42" cy="76" r="4" fill="#F3C0AC" opacity=".75"/><circle cx="78" cy="76" r="4" fill="#F3C0AC" opacity=".75"/>
+    <path d="M53 81 Q60 87 67 81" stroke="#2F2A24" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M22 130 Q26 96 60 96 Q94 96 98 130 Z" fill="#FF9E6E"/>
+  </symbol>
+
+  <!-- 孩子 -->
+  <symbol id="ic-kid" viewBox="0 0 120 130">
+    <circle cx="60" cy="30" r="27" fill="#4A3B33"/>
+    <circle cx="60" cy="64" r="28" fill="#FFE3C7"/>
+    <path d="M33 58 Q36 34 60 34 Q84 34 87 58 Q78 46 60 46 Q42 46 33 58 Z" fill="#4A3B33"/>
+    <circle cx="50" cy="64" r="2.6" fill="#2F2A24"/><circle cx="70" cy="64" r="2.6" fill="#2F2A24"/>
+    <circle cx="43" cy="72" r="4" fill="#F3C0AC" opacity=".8"/><circle cx="77" cy="72" r="4" fill="#F3C0AC" opacity=".8"/>
+    <path d="M54 77 Q60 82 66 77" stroke="#2F2A24" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M24 130 Q28 98 60 98 Q92 98 96 130 Z" fill="#8FC7E8"/>
+  </symbol>
+
+  <!-- 太阳 -->
+  <symbol id="ic-sun" viewBox="-50 -50 100 100">
+    <g class="sunrays" fill="#FFB347">
+      <rect x="-3.5" y="-47" width="7" height="13" rx="3.5"/>
+      <rect x="-3.5" y="34" width="7" height="13" rx="3.5"/>
+      <rect x="-47" y="-3.5" width="13" height="7" rx="3.5"/>
+      <rect x="34" y="-3.5" width="13" height="7" rx="3.5"/>
+      <g transform="rotate(45)"><rect x="-3.5" y="-47" width="7" height="13" rx="3.5"/><rect x="-3.5" y="34" width="7" height="13" rx="3.5"/><rect x="-47" y="-3.5" width="13" height="7" rx="3.5"/><rect x="34" y="-3.5" width="13" height="7" rx="3.5"/></g>
+    </g>
+    <circle r="25" fill="#FFC94D"/><circle r="18" fill="#FFDB8A"/>
+  </symbol>
+
+  <!-- 云 -->
+  <symbol id="ic-cloud" viewBox="0 0 140 80">
+    <ellipse cx="44" cy="52" rx="33" ry="21" fill="#F1F7FC"/>
+    <ellipse cx="86" cy="44" rx="30" ry="23" fill="#F1F7FC"/>
+    <ellipse cx="112" cy="56" rx="22" ry="16" fill="#F1F7FC"/>
+    <rect x="16" y="50" width="106" height="22" rx="11" fill="#F1F7FC"/>
+    <rect x="16" y="66" width="106" height="6" rx="3" fill="#DCE9F3" opacity=".8"/>
+  </symbol>
+
+  <!-- 星星 / 爱心 / 闪光 -->
+  <symbol id="ic-star" viewBox="-20 -20 40 40"><path d="M0 -18 L5.3 -5.9 18.3 -4.5 8.5 4.2 11.3 17 0 10.4 -11.3 17 -8.5 4.2 -18.3 -4.5 -5.3 -5.9Z" fill="#FFC94D"/></symbol>
+  <symbol id="ic-heart" viewBox="-20 -20 40 40"><path d="M0 16 C-2 12 -16 3 -16 -6 C-16 -13 -10 -17 -4 -15 C-1.5 -14 0 -11.5 0 -11.5 C0 -11.5 1.5 -14 4 -15 C10 -17 16 -13 16 -6 C16 3 2 12 0 16Z" fill="#FF7E6B"/></symbol>
+  <symbol id="ic-spark" viewBox="-20 -20 40 40"><path d="M0 -16 Q2.5 -2.5 16 0 Q2.5 2.5 0 16 Q-2.5 2.5 -16 0 Q-2.5 -2.5 0 -16Z" fill="#FFC94D"/></symbol>
+
+  <!-- 机构小房子 -->
+  <symbol id="ic-house" viewBox="0 0 170 130">
+    <path d="M16 58 L85 14 L154 58 Z" fill="#FF8C42"/>
+    <rect x="28" y="56" width="114" height="68" rx="8" fill="#FFF3E0"/>
+    <rect x="72" y="86" width="30" height="38" rx="6" fill="#C97432"/>
+    <rect x="40" y="72" width="22" height="20" rx="5" fill="#A8C6E0"/><rect x="50.2" y="72" width="2.4" height="20" fill="#FFF3E0"/><rect x="40" y="80.8" width="22" height="2.4" fill="#FFF3E0"/>
+    <rect x="110" y="72" width="22" height="20" rx="5" fill="#A8C6E0"/><rect x="120.2" y="72" width="2.4" height="20" fill="#FFF3E0"/><rect x="110" y="80.8" width="22" height="2.4" fill="#FFF3E0"/>
+    <line x1="85" y1="14" x2="85" y2="0" stroke="#C97432" stroke-width="3" stroke-linecap="round"/>
+    <path d="M85 0 L106 6 L85 12 Z" fill="#FF7E6B"/>
+  </symbol>
+
+  <!-- 饭碗+筷子（餐食） -->
+  <symbol id="ic-bowl" viewBox="0 0 140 110">
+    <g class="bob2" stroke="#E8C9A4" stroke-width="3" fill="none" stroke-linecap="round">
+      <path d="M56 30 Q60 22 56 14"/><path d="M70 26 Q74 18 70 10"/><path d="M84 30 Q88 22 84 14"/>
+    </g>
+    <path d="M40 58 Q70 32 100 58 Z" fill="#FFFDF6"/>
+    <path d="M20 56 Q70 78 120 56 L111 86 Q70 100 29 86 Z" fill="#FF8C42"/>
+    <ellipse cx="70" cy="56" rx="50" ry="12" fill="#FFF3E0"/>
+    <ellipse cx="70" cy="55" rx="41" ry="9" fill="#FFFDF6"/>
+    <rect x="92" y="12" width="44" height="4.5" rx="2" fill="#C97432" transform="rotate(16 92 12)"/>
+    <rect x="94" y="20" width="44" height="4.5" rx="2" fill="#C97432" transform="rotate(20 94 20)"/>
+  </symbol>
+
+  <!-- 午休（睡觉的小朋友） -->
+  <symbol id="ic-sleep" viewBox="0 0 160 110">
+    <rect x="6" y="74" width="148" height="15" rx="7.5" fill="#8FA3AC"/>
+    <rect x="18" y="62" width="34" height="18" rx="9" fill="#A8C6E0"/>
+    <circle cx="62" cy="60" r="25" fill="#FFE3C7"/>
+    <path d="M37 56 Q41 33 62 33 Q83 33 87 56 Q78 43 62 43 Q46 43 37 56Z" fill="#4A3B33"/>
+    <path d="M51 62 Q55 66 59 62" stroke="#2F2A24" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M66 62 Q70 66 74 62" stroke="#2F2A24" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M74 89 Q100 62 150 74 L154 89 Z" fill="#7CB88A"/>
+    <text x="98" y="44" font-size="15" font-weight="bold" fill="#8FA3AC" font-family="Arial">z</text>
+    <text x="110" y="34" font-size="19" font-weight="bold" fill="#8FA3AC" font-family="Arial">z</text>
+    <text x="124" y="22" font-size="24" font-weight="bold" fill="#8FA3AC" font-family="Arial">Z</text>
+  </symbol>
+
+  <!-- 黑板（课堂） -->
+  <symbol id="ic-board" viewBox="0 0 150 110">
+    <rect x="12" y="12" width="126" height="78" rx="10" fill="#8B5E3C"/>
+    <rect x="19" y="19" width="112" height="64" rx="6" fill="#4C6B58"/>
+    <text x="32" y="62" font-size="25" font-weight="bold" fill="#FFF7E8" font-family="Comic Sans MS,Arial">A B C</text>
+    <rect x="96" y="82" width="26" height="6" rx="3" fill="#FFF7E8"/>
+    <rect x="130" y="30" width="8" height="42" rx="4" fill="#B5ADA2"/>
+  </symbol>
+
+  <!-- 星星罐（积分） -->
+  <symbol id="ic-jar" viewBox="0 0 120 140">
+    <rect x="34" y="4" width="52" height="15" rx="7.5" fill="#C97432"/>
+    <path d="M30 22 L90 22 L95 116 Q60 132 25 116 Z" fill="#FFFDF6" stroke="#E8C9A4" stroke-width="3"/>
+    <use href="#ic-star" x="38" y="88" width="22" height="22"/>
+    <use href="#ic-star" x="60" y="94" width="22" height="22"/>
+    <use href="#ic-star" x="50" y="70" width="22" height="22"/>
+    <use href="#ic-star" x="70" y="66" width="20" height="20"/>
+    <use href="#ic-star" x="42" y="50" width="18" height="18"/>
+    <path d="M40 30 Q42 36 48 38" stroke="#FFE9CF" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </symbol>
+
+  <!-- 成长曲线 -->
+  <symbol id="ic-chart" viewBox="0 0 140 110">
+    <rect x="8" y="8" width="124" height="94" rx="10" fill="#FFFDF6" stroke="#F2E4D2" stroke-width="3"/>
+    <rect x="26" y="66" width="13" height="24" rx="5" fill="#FFD8AE"/>
+    <rect x="48" y="56" width="13" height="34" rx="5" fill="#FFC98F"/>
+    <rect x="70" y="46" width="13" height="44" rx="5" fill="#FFB36B"/>
+    <rect x="92" y="36" width="13" height="54" rx="5" fill="#FF9E4F"/>
+    <path d="M26 70 Q56 58 84 40 Q98 30 114 24" stroke="#FF8C42" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M114 24 L102 24 L112 34 Z" fill="#FF8C42"/>
+  </symbol>
+
+  <!-- 礼物盒 -->
+  <symbol id="ic-gift" viewBox="0 0 120 120">
+    <rect x="18" y="46" width="84" height="56" rx="10" fill="#FF8C42"/>
+    <rect x="14" y="34" width="92" height="20" rx="9" fill="#FFB347"/>
+    <rect x="53" y="34" width="14" height="68" fill="#FFF3E0"/>
+    <path d="M60 34 C48 18 24 20 30 34 C34 42 52 38 60 34Z" fill="#FF7E6B"/>
+    <path d="M60 34 C72 18 96 20 90 34 C86 42 68 38 60 34Z" fill="#FF7E6B"/>
+  </symbol>
+
+  <!-- 铃铛（订阅） -->
+  <symbol id="ic-bell" viewBox="0 0 120 120">
+    <path d="M96 40 Q108 54 96 68" stroke="#FF8C42" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M24 40 Q12 54 24 68" stroke="#FF8C42" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M32 82 Q36 42 60 36 Q84 42 88 82 Z" fill="#FFC94D"/>
+    <rect x="24" y="80" width="72" height="11" rx="5.5" fill="#E1701F"/>
+    <circle cx="60" cy="100" r="9" fill="#E1701F"/>
+    <rect x="56" y="20" width="8" height="12" rx="4" fill="#E1701F"/>
+  </symbol>
+
+  <!-- 小图标组（五卡 & 列表） -->
+  <symbol id="ic-checkb" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="42" fill="#7CB88A"/>
+    <path d="M31 52 L44 66 L70 37" stroke="#FFFDF6" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="ic-pencil" viewBox="0 0 100 100">
+    <rect x="18" y="12" width="64" height="76" rx="8" fill="#FFFDF6" stroke="#F2E4D2" stroke-width="3"/>
+    <rect x="30" y="28" width="40" height="5" rx="2.5" fill="#FFE3C7"/>
+    <rect x="30" y="42" width="34" height="5" rx="2.5" fill="#FFE3C7"/>
+    <rect x="30" y="56" width="24" height="5" rx="2.5" fill="#FFE3C7"/>
+    <g transform="rotate(45 66 66)"><rect x="48" y="60" width="38" height="12" rx="3" fill="#FFC94D"/><path d="M86 60 L98 66 L86 72Z" fill="#C97432"/><rect x="48" y="60" width="8" height="12" fill="#FF7E6B"/></g>
+  </symbol>
+  <symbol id="ic-clipb" viewBox="0 0 100 100">
+    <rect x="20" y="14" width="60" height="76" rx="9" fill="#FFFDF6" stroke="#F2E4D2" stroke-width="3"/>
+    <rect x="36" y="7" width="28" height="15" rx="7" fill="#8FA3AC"/>
+    <circle cx="35" cy="42" r="5" fill="#7CB88A"/><rect x="46" y="39.5" width="24" height="5" rx="2.5" fill="#FFE3C7"/>
+    <circle cx="35" cy="58" r="5" fill="#FFC94D"/><rect x="46" y="55.5" width="22" height="5" rx="2.5" fill="#FFE3C7"/>
+    <circle cx="35" cy="74" r="5" fill="#FF9E6E"/><rect x="46" y="71.5" width="20" height="5" rx="2.5" fill="#FFE3C7"/>
+  </symbol>
+  <symbol id="ic-cam2" viewBox="0 0 100 100">
+    <rect x="34" y="14" width="26" height="16" rx="6" fill="#8FA3AC"/>
+    <rect x="12" y="26" width="76" height="58" rx="13" fill="#8FA3AC"/>
+    <circle cx="50" cy="56" r="18" fill="#FFFDF6"/><circle cx="50" cy="56" r="10.5" fill="#A8C6E0"/>
+    <circle cx="77" cy="40" r="4.5" fill="#FFC94D"/>
+  </symbol>
+  <symbol id="ic-doc2" viewBox="0 0 100 100">
+    <rect x="20" y="10" width="60" height="80" rx="8" fill="#FFFDF6" stroke="#F2E4D2" stroke-width="3"/>
+    <rect x="30" y="22" width="28" height="5" rx="2.5" fill="#FFE3C7"/>
+    <path d="M30 72 L42 58 L52 65 L70 40" stroke="#FF8C42" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="70" cy="40" r="5" fill="#FF8C42"/>
+  </symbol>
+
+  <!-- 月亮 -->
+  <symbol id="ic-moon" viewBox="0 0 100 100">
+    <g mask="url(#mMoon)">
+      <circle cx="46" cy="50" r="38" fill="#FFD97A"/>
+      <circle cx="62" cy="36" r="7" fill="#FFE9B0"/><circle cx="56" cy="62" r="5" fill="#FFE9B0"/>
+    </g>
+    <use href="#ic-star" x="70" y="14" width="15" height="15"/>
+    <use href="#ic-star" x="80" y="40" width="11" height="11"/>
+  </symbol>
+</defs>
+</svg>
+
+  <div class="brand">
+    <div class="mascots">
+      <svg class="mascot-bear" viewBox="-100 -100 200 200"><use href="#ic-bear" x="-100" y="-100" width="200" height="200"/></svg>
+      <svg class="mascot-koala" viewBox="-100 -100 200 200"><use href="#ic-koala" x="-100" y="-100" width="200" height="200"/></svg>
+    </div>
+    <div class="brand-txt">
+      <h1>学子信知 · 资料中心</h1>
+      <p>托管行业数字化演示与培训资料</p>
+    </div>
+  </div>
+
+  <div class="hi">
+    <b>手机上直接点卡片查看</b>（微信内点开即看）· 家长版新版带背景音乐，建议打开声音体验 🎵
+  </div>
+
+  <div class="grid">
+
+    <a class="card" href="parent_training_v2.html">
+      <span class="ico"><svg viewBox="-100 -100 200 200"><use href="#ic-heart" x="-100" y="-100" width="200" height="200"/></svg></span>
+      <span class="txt">
+        <h3>家长版演示 · 新版 <span class="badge">最新</span></h3>
+        <p>8 页插画动画：从早上出门到晚上回家，家长一眼看懂孩子在园的每个环节</p>
+      </span>
+      <span class="go">›</span>
+    </a>
+
+    <a class="card" href="parent_training.html">
+      <span class="ico"><svg viewBox="-100 -100 200 200"><use href="#ic-star" x="-100" y="-100" width="200" height="200"/></svg></span>
+      <span class="txt">
+        <h3>家长版演示 · 经典版</h3>
+        <p>上一版讲解页：内容与新版相同，不带音乐，翻页更快</p>
+      </span>
+      <span class="go">›</span>
+    </a>
+
+    <a class="card" href="teacher_training.html">
+      <span class="ico"><svg viewBox="-100 -100 200 200"><use href="#ic-board" x="-100" y="-100" width="200" height="200"/></svg></span>
+      <span class="txt">
+        <h3>老师端培训演示 · 18 页 <span class="badge plain">培训用</span></h3>
+        <p>给老师看的操作培训页：每天 5 个动作，演示一遍、跟做一遍就会</p>
+      </span>
+      <span class="go">›</span>
+    </a>
+
+    <a class="card" href="teacher_plan.pdf">
+      <span class="ico"><svg viewBox="-100 -100 200 200"><use href="#ic-doc2" x="-100" y="-100" width="200" height="200"/></svg></span>
+      <span class="txt">
+        <h3>老师培训方案（PDF · 2 页）</h3>
+        <p>培训会怎么开：30 分钟流程、开场话术、8 条答疑、7 天陪跑</p>
+      </span>
+      <span class="go">›</span>
+    </a>
+
+    <a class="card" href="teacher_card.pdf">
+      <span class="ico"><svg viewBox="-100 -100 200 200"><use href="#ic-clipb" x="-100" y="-100" width="200" height="200"/></svg></span>
+      <span class="txt">
+        <h3>老师速查卡（PDF · 1 页）</h3>
+        <p>打印贴在工位：每天 5 个动作的正确做法，一查就会</p>
+      </span>
+      <span class="go">›</span>
+    </a>
+
+  </div>
+
+  <div class="foot">
+    <div class="line"></div>
+    <svg class="spark" viewBox="-20 -20 40 40"><use href="#ic-spark" x="-20" y="-20" width="40" height="40"/></svg>
+    学子信知 · 托管行业数字化解决方案
+    <svg class="spark" viewBox="-20 -20 40 40"><use href="#ic-spark" x="-20" y="-20" width="40" height="40"/></svg>
+    <br>本页可转发给家长与老师直接查看
+  </div>
+
+</div>
+</body>
+</html>
